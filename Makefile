@@ -7,8 +7,13 @@
 CC = gcc
 CFLAGS = -g -Wall
 LDFLAGS = -lpthread
+OBJS = hostinfo.o csapp.o
 
-all: proxy
+
+all: proxy hostinfo
+
+test : hostinfo
+	./hostinfo naver.com
 
 csapp.o: csapp.c csapp.h
 	$(CC) $(CFLAGS) -c csapp.c
@@ -19,11 +24,19 @@ proxy.o: proxy.c csapp.h
 proxy: proxy.o csapp.o
 	$(CC) $(CFLAGS) proxy.o csapp.o -o proxy $(LDFLAGS)
 
+# hostinfo.o : hostinfo.c csapp.h
+# 	$(CC) $(CFLAGS) -c hostinfo.c
+
+# hostinfo : hostinfo.o csapp.o
+# 	$(CC) $(CFLAGS) hostinfo.o csapp.o -o hostinfo $(LDFLAGS)
+
+hostinfo: $(OBJS)
+	$(CC) $(CFLAGS) -o hostinfo $(OBJS) $(LDFLAGS)
+
 # Creates a tarball in ../proxylab-handin.tar that you can then
 # hand in. DO NOT MODIFY THIS!
 handin:
 	(make clean; cd ..; tar cvf $(USER)-proxylab-handin.tar proxylab-handout --exclude tiny --exclude nop-server.py --exclude proxy --exclude driver.sh --exclude port-for-user.pl --exclude free-port.sh --exclude ".*")
 
 clean:
-	rm -f *~ *.o proxy core *.tar *.zip *.gzip *.bzip *.gz
-
+	rm -f *~ *.o proxy core *.tar *.zip *.gzip *.bzip *.gz hostinfo
