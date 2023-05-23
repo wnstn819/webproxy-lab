@@ -13,7 +13,7 @@ void read_requesthdrs(rio_t *rp);
 int parse_uri(char *uri, char *filename, char *cgiargs);
 void serve_static(int fd, char *filename, int filesize,char *method);
 void get_filetype(char *filename, char *filetype);
-void serve_dynamic(int fd, char *filename, char *cgiargs);
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *method);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
                  char *longmsg);
 
@@ -61,7 +61,7 @@ void doit(int fd) {
     return;
   }
 
-  read_requesthdrs(&rio); 
+  //read_requesthdrs(&rio); 
 
   /* Parse URI from GET request */
   is_static = parse_uri(uri, filename, cgiargs);
@@ -82,7 +82,7 @@ void doit(int fd) {
       clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run the CGI program"); 
       return;
     }
-    serve_dynamic(fd, filename, cgiargs);
+    serve_dynamic(fd, filename, cgiargs,method);
   }  
 }
 
@@ -237,7 +237,7 @@ void get_filetype(char *filename, char *filetype)
     strcpy(filetype, "text/plain");
 }
 
-void serve_dynamic(int fd, char *filename, char *cgiargs)
+void serve_dynamic(int fd, char *filename, char *cgiargs,char *method)
 { 
   // fork(): 함수를 호출한 프로세스를 복사하는 기능
   // 부모 프로세스(원래 진행되던 프로세스), 자식 프로세스(복사된 프로세스)
@@ -256,7 +256,8 @@ void serve_dynamic(int fd, char *filename, char *cgiargs)
     // 환경변수를 cigarg로 바꿔주겠다 0: 기존 값 쓰겠다 . 1: cigargs 
     setenv("QUERY_STRING", cgiargs, 1);   
     // old file descriptor, new file descriptor
-    // 화면에 출력할 수 있게끔 띄워주겠다 .
+    // 화면에 출력할 수 있게끔 띄워주겠다 
+    setenv("REQ_METHOD", method, 1); 
     Dup2(fd, STDOUT_FILENO);              // Redirect stdout to clinet
     Execve(filename, emptylist, environ); // Run CGI program
   }
