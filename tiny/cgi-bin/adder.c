@@ -11,13 +11,18 @@ int main(void) {
 
   /* Extract the two arguments */
   if ((buf = getenv("QUERY_STRING")) != NULL) {
+    
     char *delim = "&";
     char *arg = strtok(buf, delim);
     strcpy(arg1, arg);
     arg = strtok(NULL, delim);
     strcpy(arg2, arg);
-    n1 = atoi(arg1);
-    n2 = atoi(arg2);
+
+    char *delimiter = "=";
+    char *tmp_token = strtok(arg1, delimiter);
+    n1 = atoi(strtok(NULL, delimiter));
+    tmp_token = strtok(arg2, delimiter);
+    n2 = atoi(strtok(NULL, delimiter));
   }
 
 
