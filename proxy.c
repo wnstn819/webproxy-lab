@@ -11,6 +11,7 @@ void read_header(int fd, char*host, char* port, char* url);
 void read_requesthdrs(rio_t *rp);
 void doit(int fd);
 void send_request(char* host, char* port, char* uri, int connfd);
+void *thread(void *varagp);
 
 int main(int argc, char **argv) 
 {
@@ -36,10 +37,17 @@ int main(int argc, char **argv)
       Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, 
                 port, MAXLINE, 0);
       printf("Accepted connection from (%s, %s)\n", hostname, port);
-int main() {
-  printf("%s", user_agent_hdr);
-  return 0;
+      Pthread_create(&tid, NULL, thread, connfd);
     }
+}
+void *thread(void *vargp){            // 스레드를 이용해서 동시성 구현
+    int connfd = *((int *)vargp);     // 인자로 소켓 식별자 받기
+    printf("connect\n");
+    Pthread_detach(pthread_self());  // 스레드 분리 (스레드가 종료되었을 때  자원 자동 해제)
+    Free(vargp);                     // 동적 할당한 인자 반환하기
+    doit(connfd);                    // 주요 로직 실행하기
+    Close(connfd);                   // 로직이 끝나면 소켓 닫기 
+    return NULL;
 }
 
 /* 주요 로직 */
