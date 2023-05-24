@@ -21,11 +21,11 @@ csapp.o: csapp.c csapp.h
 proxy.o: proxy.c csapp.h
 	$(CC) $(CFLAGS) -c proxy.c
 
-proxy: proxy.o csapp.o
-	$(CC) $(CFLAGS) proxy.o csapp.o -o proxy $(LDFLAGS)
+cache.o: cache.c cache.h
+	$(CC) $(CFLAGS) -c cache.c 
 
-# hostinfo.o : hostinfo.c csapp.h
-# 	$(CC) $(CFLAGS) -c hostinfo.c
+proxy: proxy.o csapp.o cache.o
+	$(CC) $(CFLAGS) proxy.o csapp.o cache.o -o proxy $(LDFLAGS)
 
 # hostinfo : hostinfo.o csapp.o
 # 	$(CC) $(CFLAGS) hostinfo.o csapp.o -o hostinfo $(LDFLAGS)
